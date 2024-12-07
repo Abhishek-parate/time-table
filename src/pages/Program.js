@@ -12,7 +12,7 @@ const ProgramManagement = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [formErrors, setFormErrors] = useState({});
-    const [programs, setPrograms] = useState([]);
+    const [departments, setDepartments] = useState([]);
 
 
     // table start
@@ -29,7 +29,7 @@ const ProgramManagement = () => {
     // table end
 
 
-    // Fetch program data and programs from the API
+    // Fetch program data and departments from the API
     useEffect(() => {
         const fetchProgramData = async () => {
             setLoading(true);
@@ -43,7 +43,7 @@ const ProgramManagement = () => {
 
                 const deptResponse = await fetchDataDepartment('dept');
                 if (deptResponse.success) {
-                    setPrograms(deptResponse.data);
+                    setDepartments(deptResponse.data);
                 } else {
                     toast.error(deptResponse.message);
                 }
@@ -210,9 +210,9 @@ const ProgramManagement = () => {
     // table end
 
 
-    const enrichedProgramData = programData.map((dept) => ({
-        ...dept,
-        deptName: programs.find((program) => program.did === dept.did)?.name || 'Unknown Department',
+    const enrichedProgramData = programData.map((program) => ({
+        ...program,
+        deptName: departments.find((dept) => dept.did === program.did)?.name || 'Unknown Department',
     }));
 
 
@@ -257,7 +257,7 @@ const ProgramManagement = () => {
                             <thead>
                                 <tr className="bg-secondary text-white">
                                     <th className="p-4 text-left whitespace-nowrap">S.No</th>
-                                    <th className="p-4 text-left whitespace-nowrap">Course Name</th>
+                                    <th className="p-4 text-left whitespace-nowrap">Program Name</th>
                                     <th className="p-4 text-left whitespace-nowrap">Short Name</th>
                                     <th className="p-4 text-left whitespace-nowrap">Department</th>
                                     <th className="p-4 text-left whitespace-nowrap">Action</th>
@@ -368,9 +368,9 @@ const ProgramManagement = () => {
                                 className={`input input-bordered w-full ${formErrors.did ? 'input-error' : ''}`}
                             >
                                 <option value="">Select Program</option>
-                                {programs.map((Program) => (
-                                    <option key={Program.did} value={Program.did}>
-                                        {Program.name}
+                                {departments.map((dept) => (
+                                    <option key={dept.did} value={dept.did}>
+                                        {dept.name}
                                     </option>
                                 ))}
                             </select>

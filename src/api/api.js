@@ -72,6 +72,40 @@ export const deleteDataTime = async (endpoint, timeid) => {
     }
 };
 
+export const fetchCourseCategory= async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
+export const fetchCourseDuration = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
 
 
 export const fetchDataCourse = async (endpoint) => {
@@ -168,8 +202,15 @@ export const fetchDataFaculty = async (endpoint) => {
         const response = await axios.get(`${API_URL}${endpoint}`);
         return response.data;
     } catch (error) {
-        console.error('Error fetching data:', error);
-        throw error;
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
     }
 };
 
@@ -178,27 +219,231 @@ export const createDataFaculty = async (endpoint, data) => {
         const response = await axios.post(`${API_URL}${endpoint}`, data);
         return response.data;
     } catch (error) {
-        console.error('Error creating data:', error);
+        if (error.response) {
+            console.error('Error creating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
         throw error;
     }
 };
 
 export const updateDataFaculty = async (endpoint, fid, data) => {
     try {
-        const response = await axios.put(`${API_URL}${endpoint}&fid=${fid}`, data);
+        const response = await axios.put(`${API_URL}${endpoint}`, data);
         return response.data;
     } catch (error) {
-        console.error('Error updating data:', error);
+        if (error.response) {
+            console.error('Error updating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
         throw error;
     }
 };
 
 export const deleteDataFaculty = async (endpoint, fid) => {
     try {
-        const response = await axios.delete(`${API_URL}${endpoint}&fid=${fid}`);
+        const response = await axios.delete(`${API_URL}${endpoint}`, {
+            data: { fid },  
+        });
         return response.data;
     } catch (error) {
-        console.error('Error deleting data:', error);
+        if (error.response) {
+            console.error('Error deleting data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+export const fetchDataGaps = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
+
+
+export const fetchDataTimeTable = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
+export const createDataTimeTable = async (endpoint, data) => {
+    try {
+        const response = await axios.post(`${API_URL}${endpoint}`, data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error creating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+export const updateDataTimeTable = async (endpoint, tid, data) => {
+    try {
+        const response = await axios.put(`${API_URL}${endpoint}`, data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error updating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+export const deleteDataTimeTable = async (endpoint, tid) => {
+    try {
+        const response = await axios.delete(`${API_URL}${endpoint}`, {
+            data: { tid },  
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error deleting data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+
+export const fetchDataTimeTablebyTID = async (endpoint, tid) => {
+    try {
+        const response = await axios.delete(`${API_URL}${endpoint}`, {
+            data: { tid },  
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error deleting data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+
+
+export const fetchCourseDataAllotment = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
+export const createCourseDataAllotment = async (endpoint, data) => {
+    try {
+        const response = await axios.post(`${API_URL}${endpoint}`, data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error creating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+export const updateCourseDataAllotment = async (endpoint, caid, data) => {
+    try {
+        const response = await axios.put(`${API_URL}${endpoint}`, data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error updating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+export const deleteCourseDataAllotment = async (endpoint, caid) => {
+    try {
+        const response = await axios.delete(`${API_URL}${endpoint}`, {
+            data: { caid },  
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error deleting data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
         throw error;
     }
 };
@@ -367,6 +612,41 @@ export const deleteDataDepartment = async (endpoint, did) => {
 
 
 
+export const fetchClassRoomstype = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
+export const fetchFloors = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
+
 
 
 
@@ -466,8 +746,15 @@ export const fetchDataYear = async (endpoint) => {
         const response = await axios.get(`${API_URL}${endpoint}`);
         return response.data;
     } catch (error) {
-        console.error(`Error fetching data from ${endpoint}:`, error);
-        throw new Error('Failed to fetch data.');
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
     }
 };
 
@@ -476,35 +763,72 @@ export const createDataYear = async (endpoint, data) => {
         const response = await axios.post(`${API_URL}${endpoint}`, data);
         return response.data;
     } catch (error) {
-        console.error(`Error creating data at ${endpoint}:`, error);
-        throw new Error('Failed to create data.');
+        if (error.response) {
+            console.error('Error creating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
     }
 };
 
-export const updateDataYear = async (endpoint, id, data) => {
+export const updateDataYear = async (endpoint, yid, data) => {
     try {
-        data.yid = id;
         const response = await axios.put(`${API_URL}${endpoint}`, data);
         return response.data;
     } catch (error) {
-        console.error(`Error updating data with ID ${id} at ${endpoint}:`, error);
-        throw new Error('Failed to update data.');
+        if (error.response) {
+            console.error('Error updating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
     }
 };
 
 
 export const deleteDataYear = async (endpoint, yid) => {
     try {
-        const response = await axios.delete(`${API_URL}${endpoint}&yid=${yid}`);
+        const response = await axios.delete(`${API_URL}${endpoint}`, {
+            data: { yid },  
+        });
         return response.data;
     } catch (error) {
-        console.error('Error deleting data:', error);
+        if (error.response) {
+            console.error('Error deleting data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
         throw error;
     }
 };
 
 
-
+export const fetchDataSectionFields = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
 
 
 export const fetchDataSection = async (endpoint) => {
@@ -512,8 +836,15 @@ export const fetchDataSection = async (endpoint) => {
         const response = await axios.get(`${API_URL}${endpoint}`);
         return response.data;
     } catch (error) {
-        console.error(`Error fetching data from ${endpoint}:`, error);
-        throw new Error('Failed to fetch data.');
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
     }
 };
 
@@ -522,29 +853,51 @@ export const createDataSection = async (endpoint, data) => {
         const response = await axios.post(`${API_URL}${endpoint}`, data);
         return response.data;
     } catch (error) {
-        console.error(`Error creating data at ${endpoint}:`, error);
-        throw new Error('Failed to create data.');
+        if (error.response) {
+            console.error('Error creating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
     }
 };
 
-export const updateDataSection = async (endpoint, id, data) => {
+export const updateDataSection = async (endpoint, sid, data) => {
     try {
-        data.yid = id;
         const response = await axios.put(`${API_URL}${endpoint}`, data);
         return response.data;
     } catch (error) {
-        console.error(`Error updating data with ID ${id} at ${endpoint}:`, error);
-        throw new Error('Failed to update data.');
+        if (error.response) {
+            console.error('Error updating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
     }
 };
 
 
-export const deleteDataSection = async (endpoint, yid) => {
+export const deleteDataSection = async (endpoint, sid) => {
     try {
-        const response = await axios.delete(`${API_URL}${endpoint}&yid=${yid}`);
+        const response = await axios.delete(`${API_URL}${endpoint}`, {
+            data: { sid },  
+        });
         return response.data;
     } catch (error) {
-        console.error('Error deleting data:', error);
+        if (error.response) {
+            console.error('Error deleting data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
         throw error;
     }
 };

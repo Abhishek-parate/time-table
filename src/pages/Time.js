@@ -22,6 +22,21 @@ const Time = () => {
     const [formErrors, setFormErrors] = useState({});
     const [modalTitle, setModalTitle] = useState('');
 
+
+
+        // table start
+        const [searchTerm, setSearchTerm] = useState('');
+        const [currentPage, setCurrentPage] = useState(1);
+        const itemsPerPage = 6;
+    
+        const filteredData = timeData.filter(item =>
+            ['timeid', 'name', 'start','end','gap'].some(col => item[col]?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+    
+        // table end
+
+
+
     useEffect(() => {
         const fetchDataTimeAsync = async () => {
             setLoading(true);
@@ -82,16 +97,22 @@ const Time = () => {
             if (response.success) {
                 if (isEditing) {
                     setTimeData(timeData.map((item) => (item.timeid === form.timeid ? form : item)));
-                    toast.success('Time updated successfully!');
+                    if (response && response.success) {
+                        toast.success(response.message);  
+                    }
                 } else {
                     setTimeData([...timeData, { ...form, timeid: Date.now() }]);
-                    toast.success('Time added successfully!');
+                    if (response && response.success) {
+                        toast.success(response.message);  
+                    }
                 }
                 setShowModal(false);
                 setForm({ timeid: '', name: '', start: '', end: '', gap: 15 });
                 setIsEditing(false);
             } else {
-                toast.error(response.message);
+                if (response && response.error) {
+                    toast.error(response.message);
+                }   
             }
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -130,7 +151,7 @@ const Time = () => {
             const response = await deleteDataTime('time', timeid);
             if (response.success) {
                 setTimeData(timeData.filter(item => item.timeid !== timeid));
-                toast.success('Time deleted successfully!');
+                toast.success(response.message);
             } else {
                 toast.error(response.message);
             }
@@ -146,6 +167,43 @@ const Time = () => {
         setShowModal(false);
         setFormErrors({});
     }, []);
+
+
+     // table start
+     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+     const indexOfLastItem = currentPage * itemsPerPage;
+     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+ 
+     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+ 
+     const generateKey = (item, index) => `${['timeid', 'name', 'start','end','gap'].map(col => item[col]).join('-')}-${index}`;
+ 
+     const ActionButtons = ({ item }) => (
+         <div className="flex space-x-2 justify-center">
+             <button
+                 onClick={() => handleEdit(item)}
+                 className="btn btn-success text-white btn-sm"
+                 aria-label="Edit"
+             >
+                 Edit
+             </button>
+             <button
+                 onClick={() => handleDelete(item.timeid)}
+                 className="btn btn-error text-white btn-sm"
+                 aria-label="Delete"
+             >
+                 Delete
+             </button>
+         </div>
+     );
+ 
+     // table end
+ 
+    //  const enrichedYearData = timeData.map((year) => ({
+    //      ...year,
+    //      programName: programs.find((program) => program.pid === year.pid)?.name || 'Unknown Program',
+    //  }));
 
     return (
         <div className="p-6 bg-card-bg rounded-lg shadow-md h-full">
@@ -167,12 +225,84 @@ const Time = () => {
                     <div className="skeleton h-4 w-full"></div>
                 </div>
             ) : (
-                <Table
-                    data={timeData}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    columns={['name', 'start', 'end', 'gap']}
-                />
+              // table start
+              <div className="overflow-x-auto p-5">
+                    <div className="flex justify-between items-center mb-4">
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="input input-bordered input-primary w-1/3"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <span className="text-sm font-semibold">{`Total: ${filteredData.length} Shifts`}</span>
+                    </div>
+                    {filteredData.length > 0 ? (
+                        <table className="table table-auto w-full rounded-lg shadow-md">
+                            <thead>
+                                <tr className="bg-secondary text-white">
+                                    <th className="p-4 text-left whitespace-nowrap">S.No</th>
+                                    <th className="p-4 text-left whitespace-nowrap">Shift</th>
+                                    <th className="p-4 text-left whitespace-nowrap">Start Time</th>
+                                    <th className="p-4 text-left whitespace-nowrap">Close Time</th>
+
+                                    <th className="p-4 text-left whitespace-nowrap">Gap in Lectures</th>
+                                    <th className="p-4 text-left whitespace-nowrap">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {currentItems.map((item, index) => (
+                                <tr key={generateKey(item, index)} className="hover:bg-gray-100">
+                                    <td className="p-4">{indexOfFirstItem + index + 1}</td>
+                                    <td className="p-4">{item.name}</td>
+                                    <td className="p-4">{item.start}</td>
+                                    <td className="p-4">{item.end}</td>
+                                    <td className="p-4">{item.gap}</td>
+                              
+                                    <td className="p-4">
+                                        <ActionButtons item={item} />
+                                    </td>
+
+                                    {/* columns={['name', 'alias', 'course_code', 'category', 'max_lecture']} */}
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p className="text-center text-gray-500 mt-6">No year data available.</p>
+                    )}
+                    {totalPages > 1 && (
+                        <div className="mt-4 flex justify-center space-x-2">
+                            <button
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="btn btn-primary text-white btn-sm"
+                                aria-label="Previous Page"
+                            >
+                                Prev
+                            </button>
+                            {[...Array(totalPages)].map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => paginate(index + 1)}
+                                    className={`btn btn-sm ${currentPage === index + 1 ? 'btn-secondary' : 'btn-base-100'}`}
+                                    aria-label={`Page ${index + 1}`}
+                                >
+                                    {index + 1}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className="btn btn-primary text-white btn-sm"
+                                aria-label="Next Page"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
+                </div>
+                // table end
             )}
 
             {showModal && (

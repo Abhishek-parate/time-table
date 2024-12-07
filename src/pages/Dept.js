@@ -261,7 +261,7 @@ const TimeManagement = () => {
                             <thead>
                                 <tr className="bg-secondary text-white">
                                     <th className="p-4 text-left whitespace-nowrap">S.No</th>
-                                    <th className="p-4 text-left whitespace-nowrap">Course Name</th>
+                                    <th className="p-4 text-left whitespace-nowrap">Department Name</th>
                                     <th className="p-4 text-left whitespace-nowrap">Short Name</th>
                                     <th className="p-4 text-left whitespace-nowrap">Shift</th>
                                     <th className="p-4 text-left whitespace-nowrap">Action</th>

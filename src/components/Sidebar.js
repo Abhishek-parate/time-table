@@ -7,9 +7,11 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const location = useLocation();
   const [isGeneralOpen, setIsGeneralOpen] = React.useState(false);
 
+  const [isMasterOpen, setIsMasterOpen] = React.useState(false);
+
   const menuItems = [
     { name: 'Manage Shift', path: '/time', icon: <FaRegClock /> }, // Changed to FaRegClock
-    { name: 'Manage Department', path: '/Dept', icon: <FaBuilding /> }, // Changed to FaBuilding
+    { name: 'Manage Department', path: '/dept', icon: <FaBuilding /> }, // Changed to FaBuilding
     { name: 'Manage Program', path: '/program', icon: <FaBriefcase /> }, // Changed to FaBriefcase
     { name: 'Manage Academic Year', path: '/year', icon: <FaBuilding /> }, // Changed to FaBuilding
     { name: 'Manage Section', path: '/section', icon: <FaThList /> }, // Changed to FaThList
@@ -17,6 +19,12 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     { name: 'Manage Faculty', path: '/faculty', icon: <FaUserTie /> }, // Changed to FaUserTie
     { name: 'Manage Class Room', path: '/classroom', icon: <FaHome /> }, // Changed to FaHome
     { name: 'Manage Allotment', path: '/allotment', icon: <FaBuilding /> }, // Changed to FaBuilding
+
+  ];
+
+  const mastermenuItems = [
+    { name: 'Manage Course Allotment', path: '/course-allotment', icon: <FaBuilding /> }, // Changed to FaBuilding
+    { name: 'Manage Timetable', path: '/manage-timetable', icon: <FaBuilding /> }, // Changed to FaBuilding
   ];
 
   const getLinkClass = (path) =>
@@ -62,6 +70,34 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                 </div>
               )}
             </div>
+
+            <div>
+              <button
+                onClick={() => setIsMasterOpen(!isMasterOpen)}
+                className="flex items-center w-full px-2 py-2 text-sm font-medium text-white rounded-md hover:bg-secondary focus:outline-none"
+              >
+                <span className="mr-3">
+                  <FaChevronDown
+                    className={`transition-transform ${isMasterOpen ? 'rotate-180' : 'rotate-0'}`}
+                  />
+                </span>
+                Master Settings
+              </button>
+              {isMasterOpen && (
+                <div className="mt-2 space-y-1 pl-6">
+                  {mastermenuItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${getLinkClass(item.path)}`}
+                    >
+                      <span className="mr-3">{item.icon}</span>
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
           <div className="px-4 py-4">
             <button className="btn btn-accent w-full">Timetable Planner</button>
@@ -71,6 +107,13 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
       {/* Mobile Overlay */}
       {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          onClick={toggleSidebar}
+        ></div>
+      )}
+
+      {isMasterOpen&& (
         <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={toggleSidebar}

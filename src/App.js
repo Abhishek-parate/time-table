@@ -12,6 +12,12 @@ import ClassRoom from './pages/ClassRoom';
 import Dept from './pages/Dept';
 import Allotment from './pages/Allotment';
 import Year from './pages/Year';
+import CourseAllotmentManagement from './pages/CourseAllotment';
+import TimetableManagement from './pages/Timetable';
+import DetailedTimetableManagement from './pages/DetailedTimetableManagement';
+import NotFoundPage from './pages/NOtFound';
+
+
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -42,6 +48,12 @@ const App = () => {
               <Route path="/dept" element={<Dept />} />
               <Route path="/allotment" element={<Allotment />} />
               <Route path="/year" element={<Year />} />
+              <Route path="/course-allotment" element={<CourseAllotmentManagement />} />
+              <Route path="/manage-timetable/:tid" element={<DetailedTimetableManagement />} />
+              <Route path="/manage-timetable" element={<TimetableManagement />} />
+
+              <Route path="*" element={<NotFoundPage />} /> {/* Catch-all route */}
+
             </Routes>
           </main>
         </div>

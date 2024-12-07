@@ -1,10 +1,26 @@
-// src/components/Navbar.js
 import React, { useState } from 'react';
-import { FaUserCircle, FaBell, FaBars, FaTimes } from 'react-icons/fa';
+import { FaUserCircle, FaBell, FaBars, FaExpand, FaCompress } from 'react-icons/fa';
 import logo from '../images/logo.webp'; // Make sure the path is correct
 
 const Navbar = ({ toggleSidebar }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Fullscreen toggle function
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen mode: ${err.message}`);
+      });
+    } else {
+      // Exit fullscreen
+      document.exitFullscreen().catch((err) => {
+        console.error(`Error attempting to exit fullscreen mode: ${err.message}`);
+      });
+    }
+  };
+  
 
   return (
     <div className="navbar bg-primary text-white lg:bg-white lg:text-black shadow-lg p-4 flex justify-between items-center">
@@ -33,9 +49,18 @@ const Navbar = ({ toggleSidebar }) => {
 
       {/* Right Section */}
       <div className="flex items-center space-x-4">
+        {/* Fullscreen Toggle */}
+        <button
+          className="btn btn-ghost btn-circle text-white lg:text-black"
+          onClick={toggleFullscreen}
+        >
+          {isFullscreen ? <FaCompress size={24} /> : <FaExpand size={24} />}
+        </button>
+
         <p className="hidden sm:block px-4 py-2 hover:bg-gray-100 cursor-pointer text-white lg:text-black">
           Logged in as <span className="font-semibold">Abhishek</span>
         </p>
+
         {/* Notification Icon */}
         <button className="btn btn-ghost btn-circle relative hover:bg-gray-200 text-white lg:text-black">
           <FaBell size={24} />
