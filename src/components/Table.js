@@ -3,102 +3,119 @@ import React, { useState } from 'react';
 const Table = ({ data, handleEdit, handleDelete, columns }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5); // Number of items per page
+    const itemsPerPage = 6;
 
-    // Filter the data based on the search term
     const filteredData = data.filter(item =>
         columns.some(col => item[col]?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    // Get current items
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
-    // Change page
-    const paginate = pageNumber => setCurrentPage(pageNumber);
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Calculate total pages
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const generateKey = (item, index) => `${columns.map(col => item[col]).join('-')}-${index}`;
+
+    const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
+    const ActionButtons = ({ item }) => (
+        <div className="flex space-x-2 justify-center">
+            <button
+                onClick={() => handleEdit(item)}
+                className="btn btn-success text-white btn-sm"
+                aria-label="Edit"
+            >
+                Edit
+            </button>
+            <button
+                onClick={() => handleDelete(item.cid  || item.pid ||  item.did || item.sid || item.fid || item.timeid  || item.rid )}
+                className="btn btn-error text-white btn-sm"
+                aria-label="Delete"
+            >
+                Delete
+            </button>
+        </div>
+    );
 
     return (
-        <div className='p-5 bg-gray-50 rounded-lg shadow-lg'>
-            <div className="mb-4 flex justify-between items-center">
+        <div className="overflow-x-auto p-5">
+            <div className="flex justify-between items-center mb-4">
                 <input
                     type="text"
                     placeholder="Search..."
-                    className="input input-bordered w-1/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input input-bordered input-primary w-1/3"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <span className="text-sm font-semibold text-gray-600">{`Total: ${filteredData.length} items`}</span>
+                <span className="text-sm font-semibold">{`Total: ${filteredData.length}`}</span>
             </div>
 
-            <table className="table w-full bg-white rounded-lg shadow-md">
-                <thead className="bg-blue-500 text-white">
-                    <tr>
-                        <th className="p-4 text-left">S.No</th>
-                        {columns.map((col) => (
-                            <th key={col} className="p-4 text-left">
-                                {col.charAt(0).toUpperCase() + col.slice(1)}
-                            </th>
-                        ))}
-                        <th className="p-4 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentItems.map((item, index) => (
-                        <tr
-                            key={`${item.sid || item.timeid || item.cid || item.fid || item.pid || index}`} // Ensure uniqueness
-                            className="hover:bg-gray-100 transition duration-300"
+            {filteredData.length > 0 ? (
+             <table className="table table-auto w-full rounded-lg shadow-md">
+             <thead>
+                 <tr className="bg-secondary text-white">
+                     <th className="p-4 text-left whitespace-nowrap">S.No</th>
+                     {columns.map((col) => (
+                         <th key={col} className="p-4 text-left whitespace-nowrap">
+                             {capitalize(col)}
+                         </th>
+                     ))}
+                     <th className="p-4 text-left whitespace-nowrap">Actions</th>
+                 </tr>
+             </thead>
+             <tbody>
+                 {currentItems.map((item, index) => (
+                     <tr key={generateKey(item, index)} className="hover:bg-gray-100">
+                         <td className="p-4">{indexOfFirstItem + index + 1}</td>
+                         {columns.map((col) => (
+                             <td key={`${col}-${item[col]}-${index}`} className="p-4 whitespace-nowrap">
+                                 {item[col]}
+                             </td>
+                         ))}
+                         <td className="p-4">
+                             <ActionButtons item={item} />
+                         </td>
+                     </tr>
+                 ))}
+             </tbody>
+         </table>
+         
+            ) : (
+                <p className="text-center text-gray-500 mt-6">No data available.</p>
+            )}
+
+            {totalPages > 1 && (
+                <div className="mt-4 flex justify-center space-x-2">
+                    <button
+                        onClick={() => paginate(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="btn btn-primary text-white btn-sm"
+                        aria-label="Previous Page"
+                    >
+                        Prev
+                    </button>
+                    {[...Array(totalPages)].map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => paginate(index + 1)}
+                            className={`btn btn-sm ${currentPage === index + 1 ? 'btn-secondary' : 'btn-base-100'}`}
+                            aria-label={`Page ${index + 1}`}
                         >
-                            <td className="p-4 border-t border-gray-200">{indexOfFirstItem + index + 1}</td>
-                            {columns.map((col) => (
-                                <td key={`${col}-${item[col]}`} className="p-4 border-t border-gray-200">
-                                    {item[col]}
-                                </td>
-                            ))}
-                            <td className="p-4 border-t border-gray-200">
-                                <div className="flex space-x-2">
-                                    <button
-                                        onClick={() => handleEdit(item)}
-                                        className="btn btn-sm btn-info hover:bg-blue-600 transition duration-200"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(item.sid || item.timeid || item.cid || item.fid || item.pid)}
-                                        className="btn btn-sm btn-error hover:bg-red-600 transition duration-200"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                            {index + 1}
+                        </button>
                     ))}
-                </tbody>
-            </table>
-
-            {/* Pagination Controls */}
-            <div className="flex justify-between items-center mt-4">
-                <button
-                    onClick={() => paginate(currentPage > 1 ? currentPage - 1 : 1)}
-                    className="btn btn-outline btn-sm text-gray-600 hover:bg-gray-200 transition duration-200"
-                    disabled={currentPage === 1}
-                >
-                    Previous
-                </button>
-                <div className="flex items-center">
-                    <span className="mx-2 font-semibold text-gray-700">{`Page ${currentPage} of ${totalPages}`}</span>
+                    <button
+                        onClick={() => paginate(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="btn btn-primary text-white btn-sm"
+                        aria-label="Next Page"
+                    >
+                        Next
+                    </button>
                 </div>
-                <button
-                    onClick={() => paginate(currentPage < totalPages ? currentPage + 1 : totalPages)}
-                    className="btn btn-outline btn-sm text-gray-600 hover:bg-gray-200 transition duration-200"
-                    disabled={currentPage === totalPages}
-                >
-                    Next
-                </button>
-            </div>
+            )}
         </div>
     );
 };

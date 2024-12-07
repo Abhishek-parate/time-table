@@ -22,6 +22,7 @@ const FacultyManagement = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [formErrors, setFormErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false); // State for password visibility
+    const [modalTitle, setModalTitle] = useState(''); // New state for modal title
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,26 +46,17 @@ const FacultyManagement = () => {
 
     const validateForm = () => {
         const errors = {};
-        if (!form.name) {
-            errors.name = 'Name is required';
-        }
-        if (!form.entrytime) {
-            errors.entrytime = 'Entry time is required';
-        }
-        if (!form.exittime) {
-            errors.exittime = 'Exit time is required';
-        }
-        if (!form.user) {
-            errors.user = 'User index is required';
-        }
-        if (!form.pass) {
-            errors.pass = 'Password is required';
-        }
-        if (!form.day) {
-            errors.day = 'Day is required';
-        }
-        if (!form.max_allowed_lecture || isNaN(form.max_allowed_lecture)) {
-            errors.max_allowed_lecture = 'Max allowed lecture must be a number';
+        if (!form.name) errors.name = 'Name is required';
+        if (!form.entrytime) errors.entrytime = 'Entry time is required';
+        if (!form.exittime) errors.exittime = 'Exit time is required';
+        if (!form.user) errors.user = 'User index is required';
+        if (!form.pass) errors.pass = 'Password is required';
+        if (!form.day) errors.day = 'Day is required';
+        if (!form.max_allowed_lecture || isNaN(form.max_allowed_lecture)) errors.max_allowed_lecture = 'Max allowed lecture must be a number';
+
+        const isDuplicate = facultyData.some(item => item.name.toLowerCase() === form.name.toLowerCase() && item.fid !== form.fid);
+        if (isDuplicate) {
+            errors.name = 'Faculty Name already exists';
         }
         return errors;
     };
@@ -88,9 +80,7 @@ const FacultyManagement = () => {
 
             if (response.success) {
                 if (isEditing) {
-                    setFacultyData(
-                        facultyData.map((item) => (item.fid === form.fid ? form : item))
-                    );
+                    setFacultyData(facultyData.map((item) => (item.fid === form.fid ? form : item)));
                     toast.success('Faculty updated successfully!');
                 } else {
                     setFacultyData([...facultyData, { ...form, fid: Date.now() }]);
@@ -132,6 +122,7 @@ const FacultyManagement = () => {
             max_allowed_lecture: '',
         });
         setIsEditing(false);
+        setModalTitle('Add New Faculty'); // Set modal title for adding
         setShowModal(true);
     };
 
@@ -149,6 +140,7 @@ const FacultyManagement = () => {
         });
         setIsEditing(true);
         setShowModal(true);
+        setModalTitle('Edit Faculty'); // Set modal title for editing
     };
 
     const handleDelete = async (fid) => {
@@ -175,19 +167,23 @@ const FacultyManagement = () => {
     }, []);
 
     return (
-        <div className="p-6 bg-base-100 rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold mb-4">Faculty Management</h1>
-            <button
-                onClick={handleAddNewFaculty}
-                className="btn btn-primary mb-4">
-                Add Faculty
-            </button>
+        <div className="p-6 bg-card-bg rounded-lg shadow-md h-full">
+            <div className="flex justify-between items-center ">
+                <h1 className="text-2xl font-bold">Faculty Management</h1>
+                <button className="btn btn-primary text-card-bg" onClick={handleAddNewFaculty}>
+                    Add Faculty
+                </button>
+            </div>
             {loading ? (
-                <div className="space-y-4">
-                    <div className="skeleton h-8 w-full"></div>
-                    <div className="skeleton h-8 w-full"></div>
-                    <div className="skeleton h-8 w-full"></div>
-                </div>
+  <div className="space-y-4 py-5">
+  <div className="skeleton h-16 w-full"></div>
+  <div className="skeleton h-4 w-52"></div>
+  <div className="skeleton h-4 w-full"></div>
+  <div className="skeleton h-4 w-full"></div>
+  <div className="skeleton h-4 w-full"></div>
+  <div className="skeleton h-4 w-full"></div>
+  <div className="skeleton h-4 w-full"></div>
+  </div>
             ) : (
                 <Table
                     data={facultyData}
@@ -198,6 +194,7 @@ const FacultyManagement = () => {
             )}
             {showModal && (
                 <FormModal
+                    modalTitle={modalTitle} // Pass modal title as prop
                     form={form}
                     setForm={setForm}
                     handleSubmit={handleSubmit}
@@ -206,7 +203,6 @@ const FacultyManagement = () => {
                     formErrors={formErrors}
                 >
                     <div className="form-modal p-4">
-                        {/* Displaying inputs in two columns */}
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label className="label">

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-hot-toast'; // Ensure toast is imported
+import { toast } from 'react-hot-toast';
 import { fetchDataCourse, createDataCourse, updateDataCourse, deleteDataCourse } from '../api/api';
 import FormModal from '../components/FormModal';
-import Table from '../components/Table';
 
 const CourseManagement = () => {
     const [courseData, setCourseData] = useState([]);
@@ -11,12 +10,27 @@ const CourseManagement = () => {
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [formErrors, setFormErrors] = useState({});
+    const [modalTitle, setModalTitle] = useState('');
+
+    // table start
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+
+
+
+    const filteredData = courseData.filter(item =>
+        ['cid', 'name', 'alias', 'course_code', 'category', 'max_lecture'].some(col => item[col]?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+
+        // table end
+
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await fetchDataCourse('course'); // Update this to fetch courses
+                const response = await fetchDataCourse('course');
                 if (response.success) {
                     setCourseData(response.data);
                 } else {
@@ -34,21 +48,17 @@ const CourseManagement = () => {
 
     const validateForm = () => {
         const errors = {};
-        if (!form.name) {
-            errors.name = 'Name is required';
+        if (!form.name) errors.name = 'Name is required';
+        if (!form.alias) errors.alias = 'Alias is required';
+        if (!form.course_code) errors.course_code = 'Course Code is required';
+        if (!form.category) errors.category = 'Category is required';
+        if (!form.max_lecture || isNaN(form.max_lecture)) errors.max_lecture = 'Max Lecture must be a number';
+
+        const isDuplicate = courseData.some(item => item.name.toLowerCase() === form.name.toLowerCase() && item.cid !== form.cid);
+        if (isDuplicate) {
+            errors.name = 'Section name already exists';
         }
-        if (!form.alias) {
-            errors.alias = 'Alias is required';
-        }
-        if (!form.course_code) {
-            errors.course_code = 'Course Code is required';
-        }
-        if (!form.category) {
-            errors.category = 'Category is required';
-        }
-        if (!form.max_lecture || isNaN(form.max_lecture)) {
-            errors.max_lecture = 'Max Lecture must be a number';
-        }
+
         return errors;
     };
 
@@ -66,28 +76,36 @@ const CourseManagement = () => {
 
         try {
             const response = isEditing
-                ? await updateDataCourse('course', form.cid, form) // Update to use course update API
-                : await createDataCourse('course', form); // Update to use course create API
+                ? await updateDataCourse('course', form.cid, form)
+                : await createDataCourse('course', form);
 
             if (response.success) {
                 if (isEditing) {
-                    setCourseData(
-                        courseData.map((item) => (item.cid === form.cid ? form : item))
-                    );
-                    toast.success('Course updated successfully!'); // Success notification
+                    setCourseData(courseData.map((item) => (item.cid === form.cid ? form : item)));
+                   
+                    if (response && response.success) {
+                        toast.success(response.message);  
+                    }
                 } else {
                     setCourseData([...courseData, { ...form, cid: Date.now() }]);
-                    toast.success('Course added successfully!'); // Success notification
+                    if (response && response.success) {
+                        toast.success(response.message);  
+                    }
                 }
                 setShowModal(false);
                 setForm({ cid: '', name: '', alias: '', course_code: '', category: '', max_lecture: '' });
                 setIsEditing(false);
             } else {
-                toast.error(response.message); // Error notification
+                
+                if (response && response.error) {
+                    toast.error(response.message);
+                }
             }
         } catch (error) {
             console.error('Error submitting form:', error);
-            toast.error('Failed to submit the form. Please try again.'); // Error notification
+            toast.error('Failed to submit the form. Please try again.');
+            
+
         }
         setLoading(false);
     };
@@ -95,6 +113,7 @@ const CourseManagement = () => {
     const handleAddNewCourse = () => {
         setForm({ cid: '', name: '', alias: '', course_code: '', category: '', max_lecture: '' });
         setIsEditing(false);
+        setModalTitle('Add New Course');
         setShowModal(true);
     };
 
@@ -108,22 +127,26 @@ const CourseManagement = () => {
             max_lecture: item.max_lecture,
         });
         setIsEditing(true);
+        setModalTitle('Edit Course');
         setShowModal(true);
     };
 
     const handleDelete = async (cid) => {
         setLoading(true);
         try {
-            const response = await deleteDataCourse('course', cid); // Update to use course delete API
+            const response = await deleteDataCourse('course', cid);
             if (response.success) {
                 setCourseData(courseData.filter(item => item.cid !== cid));
-                toast.success('Course deleted successfully!'); // Success notification
+                if (response && response.success) {
+                    toast.success(response.message);  
+                }
+                
             } else {
-                toast.error(response.message); // Error notification
+                toast.error(response.message);
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            toast.error('Failed to delete the course. Please try again.'); // Error notification
+            toast.error('Failed to delete the course. Please try again.');
         }
         setLoading(false);
     };
@@ -133,30 +156,151 @@ const CourseManagement = () => {
         setFormErrors({});
     }, []);
 
-    return (
-        <div className="p-6 bg-base-100 rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold mb-4">Course Management</h1>
+    // table start
+
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const generateKey = (item, index) => `${['cid', 'name', 'alias', 'course_code', 'category', 'max_lecture'].map(col => item[col]).join('-')}-${index}`;
+
+    const ActionButtons = ({ item }) => (
+        <div className="flex space-x-2 justify-center">
             <button
-                onClick={handleAddNewCourse}
-                className="btn btn-primary mb-4">
-                Add Course
+                onClick={() => handleEdit(item)}
+                className="btn btn-success text-white btn-sm"
+                aria-label="Edit"
+            >
+                Edit
             </button>
+            <button
+                onClick={() => handleDelete(item.cid)}
+                className="btn btn-error text-white btn-sm"
+                aria-label="Delete"
+            >
+                Delete
+            </button>
+        </div>
+    );
+
+    // table end
+
+    return (
+        <div className="p-6 bg-card-bg rounded-lg shadow-md h-full">
+            <div className="flex justify-between items-center ">
+                <h1 className="text-2xl font-bold">Course Management</h1>
+                <button className="btn btn-primary text-card-bg" onClick={handleAddNewCourse}>
+                    Add Course
+                </button>
+            </div>
+
+           
+
             {loading ? (
-                <div className="space-y-4">
-                    <div className="skeleton h-8 w-full"></div>
-                    <div className="skeleton h-8 w-full"></div>
-                    <div className="skeleton h-8 w-full"></div>
+                <div className="space-y-4 py-5">
+                    <div className="skeleton h-16 w-full"></div>
+                    <div className="skeleton h-4 w-52"></div>
+                    <div className="skeleton h-4 w-full"></div>
+                    <div className="skeleton h-4 w-full"></div>
+                    <div className="skeleton h-4 w-full"></div>
+                    <div className="skeleton h-4 w-full"></div>
+                    <div className="skeleton h-4 w-full"></div>
                 </div>
             ) : (
-                <Table
-                    data={courseData}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    columns={['name', 'alias', 'course_code', 'category', 'max_lecture']}
-                />
+
+                    // table start
+
+                <div className="overflow-x-auto p-5">
+                <div className="flex justify-between items-center mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="input input-bordered input-primary w-1/3"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <span className="text-sm font-semibold">{`Total: ${filteredData.length} Courses` }</span>
+                </div>
+                {filteredData.length > 0 ? (
+                    <table className="table table-auto w-full rounded-lg shadow-md">
+                        <thead>
+                            <tr className="bg-secondary text-white">
+                                <th className="p-4 text-left whitespace-nowrap">S.No</th>
+                                <th className="p-4 text-left whitespace-nowrap">Course Name</th>
+                                <th className="p-4 text-left whitespace-nowrap">Short Name</th>
+                                <th className="p-4 text-left whitespace-nowrap">Course Code</th>
+                                <th className="p-4 text-left whitespace-nowrap">Type</th>
+                                <th className="p-4 text-left whitespace-nowrap">Max Lecture</th>
+                                <th className="p-4 text-left whitespace-nowrap">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentItems.map((item, index) => (
+                                <tr key={generateKey(item, index)} className="hover:bg-gray-100">
+                                    <td className="p-4">{indexOfFirstItem + index + 1}</td>
+                                    <td className="p-4">{item.name}</td>
+                                    <td className="p-4">{item.alias}</td>
+                                    <td className="p-4">{item.course_code}</td>
+                                    <td className="p-4">{item.category}</td>
+                                    <td className="p-4">{item.max_lecture}</td>
+                                    <td className="p-4">
+                                        <ActionButtons item={item} />
+                                    </td>
+
+                                    {/* columns={['name', 'alias', 'course_code', 'category', 'max_lecture']} */}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                ) : (
+                    <p className="text-center text-gray-500 mt-6">No data available.</p>
+                )}
+
+                {totalPages > 1 && (
+                    <div className="mt-4 flex justify-center space-x-2">
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="btn btn-primary text-white btn-sm"
+                            aria-label="Previous Page"
+                        >
+                            Prev
+                        </button>
+                        {[...Array(totalPages)].map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => paginate(index + 1)}
+                                className={`btn btn-sm ${currentPage === index + 1 ? 'btn-secondary' : 'btn-base-100'}`}
+                                aria-label={`Page ${index + 1}`}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="btn btn-primary text-white btn-sm"
+                            aria-label="Next Page"
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
+
+
+            </div>
+
+                // table end
+
             )}
             {showModal && (
                 <FormModal
+                    modalTitle={modalTitle}
                     form={form}
                     setForm={setForm}
                     handleSubmit={handleSubmit}
@@ -233,12 +377,12 @@ const CourseManagement = () => {
                             />
                             {formErrors.max_lecture && <p className="text-error">{formErrors.max_lecture}</p>}
                         </div>
-                        <div className="save-button">
-                            <button
-                                onClick={handleSubmit}
-                                className="btn btn-success">
-                                Save
+                        <div className="modal-action">
+                         
+                            <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
+                                {isEditing ? 'Update Course' : 'Add Course'}
                             </button>
+                            <button className="btn btn-secondary" onClick={handleClose}>Cancel</button>
                         </div>
                     </div>
                 </FormModal>
