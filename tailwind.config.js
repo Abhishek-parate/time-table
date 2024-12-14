@@ -22,6 +22,7 @@ module.exports = {
     extend: {
       colors: {
         'primary-hover': '#e07a3f',    // Richer orange for hover interactions
+        'table-val': '#FFDCCC',  
         'secondary-hover': '#374151',  // Darker gray for secondary hover
         'accent-hover': '#7c3aad',     // Darker purple for accent hover
         'neutral-hover': '#141424',    // Deeper charcoal for hover effects

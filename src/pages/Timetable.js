@@ -437,11 +437,11 @@ const TimetableManagement = () => {
                   <th className="p-4 text-left whitespace-nowrap">Program</th>
                   <th className="p-4 text-left whitespace-nowrap">Year</th>
                   <th className="p-4 text-left whitespace-nowrap">Section</th>
-                  <th className="p-4 text-left whitespace-nowrap">Gap</th>
+                  <th className="p-4 text-left whitespace-nowrap">Duration of Lecture</th>
                   <th className="p-4 text-left whitespace-nowrap">
-                    Start Time
+                    Start Lecture Time
                   </th>
-                  <th className="p-4 text-left whitespace-nowrap">End Time</th>
+                  <th className="p-4 text-left whitespace-nowrap">End Lecture Time</th>
 
                   <th className="p-4 text-left whitespace-nowrap">Action</th>
                 </tr>
@@ -636,7 +636,7 @@ const TimetableManagement = () => {
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="label">
-                  <span className="label-text">Course</span>
+                  <span className="label-text">Start Lecture Time</span>
                 </label>
                 <input
                   type="time"
@@ -655,7 +655,7 @@ const TimetableManagement = () => {
 
               <div>
                 <label className="label">
-                  <span className="label-text">Faculty</span>
+                  <span className="label-text">End Lecture Time</span>
                 </label>
                 <input
                   type="time"

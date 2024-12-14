@@ -18,8 +18,6 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     { name: 'Manage Course', path: '/course', icon: <FaBookOpen /> }, // Changed to FaBookOpen
     { name: 'Manage Faculty', path: '/faculty', icon: <FaUserTie /> }, // Changed to FaUserTie
     { name: 'Manage Class Room', path: '/classroom', icon: <FaHome /> }, // Changed to FaHome
-    { name: 'Manage Allotment', path: '/allotment', icon: <FaBuilding /> }, // Changed to FaBuilding
-
   ];
 
   const mastermenuItems = [

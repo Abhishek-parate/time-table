@@ -357,15 +357,15 @@ export const deleteDataTimeTable = async (endpoint, tid) => {
 };
 
 
+
 export const fetchDataTimeTablebyTID = async (endpoint, tid) => {
     try {
-        const response = await axios.delete(`${API_URL}${endpoint}`, {
-            data: { tid },  
-        });
+
+        const response = await axios.post(`${API_URL}${endpoint}`, { tid: tid.toString() });
         return response.data;
     } catch (error) {
         if (error.response) {
-            console.error('Error deleting data:', error.response.data);
+            console.error('Error fetching data:', error.response.data);
         } else if (error.request) {
             console.error('No response received:', error.request);
         } else {
@@ -375,6 +375,25 @@ export const fetchDataTimeTablebyTID = async (endpoint, tid) => {
         throw error;
     }
 };
+
+
+export const fetchDatafacultybyID = async (endpoint, data) => {
+    try {
+        const response = await axios.post(`${API_URL}${endpoint}`, data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error creating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
 
 
 
