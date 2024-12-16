@@ -63,7 +63,15 @@ const YearManagement = () => {
             errors.pid = 'Program is required';
         }
 
-        const isDuplicate = yearData.some(item => item.name.toLowerCase() === form.name.toLowerCase() && item.yid !== form.yid);
+        const isDuplicate = yearData.some(
+            (item) =>
+              item.name.toLowerCase() === form.name.toLowerCase() &&
+              item.pid === form.pid &&
+              item.yid !== form.yid
+          );
+      
+        
+        
         if (isDuplicate) {
             errors.name = 'Year already exists';
         }
@@ -334,7 +342,7 @@ const YearManagement = () => {
                         <div className="modal-action">
 
                             <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
-                                {isEditing ? 'Update Program' : 'Add Program'}
+                                {isEditing ? 'Update Year' : 'Add Year'}
                             </button>
                             <button className="btn btn-secondary" onClick={handleClose}>Cancel</button>
                         </div>

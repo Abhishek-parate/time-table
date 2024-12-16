@@ -41,6 +41,7 @@ const TimetableManagement = () => {
   const [departments, setDepartments] = useState([]);
   const [gaps, setGaps] = useState([]);
   const navigate = useNavigate();
+  const [semesters, setSemesters] = useState([]);
 
 
   // table start
@@ -103,12 +104,12 @@ const TimetableManagement = () => {
           toast.error(gapsResponse.message);
         }
 
-        // const sectionfieldsResponse = await fetchDataSection("sectionfields");
-        // if (sectionfieldsResponse.success) {
-        //   setSectionFields(sectionfieldsResponse.data);
-        // } else {
-        //   toast.error(sectionfieldsResponse.message);
-        // }
+                    const semesterResponse = await fetchDataSection('semesterdata');
+                    if (semesterResponse.success) {
+                        setSemesters(semesterResponse.data);
+                    } else {
+                        toast.error(semesterResponse.message);
+                    }
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to fetch data. Please try again later.");
@@ -358,15 +359,23 @@ const TimetableManagement = () => {
         ...prevForm,
         pid: "",
         yid: "",
+        semid:'',
         sid: "",
       }));
     } else if (name === "pid") {
       setForm((prevForm) => ({
         ...prevForm,
         yid: "",
+        semid:'',
         sid: "",
       }));
     } else if (name === "yid") {
+      setForm((prevForm) => ({
+        ...prevForm,
+        semid:'',
+        sid: "",
+      }));
+    } else if (name === "semid") {
       setForm((prevForm) => ({
         ...prevForm,
         sid: "",
@@ -384,9 +393,14 @@ const TimetableManagement = () => {
     [form.pid, years]
   );
 
+  const filteredSemester = useMemo(
+    () => semesters.filter((sem) => sem.yid === form.yid),
+    [form.yid, semesters]
+  );
+
   const filteredSections = useMemo(
-    () => sections.filter((section) => section.yid === form.yid),
-    [form.yid, sections]
+    () => sections.filter((section) => section.semid === form.semid),
+    [form.semid, sections]
   );
 
   return (
@@ -585,6 +599,28 @@ const TimetableManagement = () => {
     </select>
     {formErrors.yid && <span className="error">{formErrors.yid}</span>}
               </div>
+
+              <div>
+                <label className="label">
+                  <span className="label-text">Year</span>
+                </label>
+                <select
+      id="semid"
+      name="semid"
+      value={form.semid}
+      onChange={handleInputChange}
+      className="input input-bordered w-full"
+      disabled={!form.yid} // Disable if no program is selected
+    >
+      <option value="">Select Semester</option>
+      {filteredSemester.map((sem) => (
+        <option key={sem.semid} value={sem.semid}>
+          {sem.name}
+        </option>
+      ))}
+    </select>
+    {formErrors.semid && <span className="error">{formErrors.semid}</span>}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -598,7 +634,7 @@ const TimetableManagement = () => {
       value={form.sid}
       onChange={handleInputChange}
       className="input input-bordered w-full "
-      disabled={!form.yid} // Disable if no year is selected
+      disabled={!form.semid} // Disable if no year is selected
     >
       <option value="">Select Section</option>
       {filteredSections.map((section) => (

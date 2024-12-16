@@ -84,14 +84,28 @@ const ManageTimetable = () => {
   };
 
   const handleSelectChange = (day, timeSlot, type, value) => {
-    setSelectedDetails((prev) => ({
-      ...prev,
-      [`${day}-${timeSlot}`]: {
-        ...prev[`${day}-${timeSlot}`],
-        [type]: value,
-      },
-    }));
+    setSelectedDetails((prev) => {
+      const updatedDetails = { ...prev };
+      const currentSlot = updatedDetails[`${day}-${timeSlot}`] || {};
+  
+      if (type === "course") {
+        const selectedCourse = faculties.find((faculty) => faculty.cid === value);
+        // Update course and faculty details
+        updatedDetails[`${day}-${timeSlot}`] = {
+          ...currentSlot,
+          course: value,
+          faculty: selectedCourse ? selectedCourse.faculty_name : "", // Set faculty based on course
+        };
+      } else if (type === "room") {
+        updatedDetails[`${day}-${timeSlot}`] = {
+          ...currentSlot,
+          room: value,
+        };
+      }
+      return updatedDetails;
+    });
   };
+  
 
   if (loading) return <div className="text-center p-6">Loading...</div>;
   if (error) return <div className="text-center text-red-500 p-6">Error: {error}</div>;
@@ -111,13 +125,13 @@ const ManageTimetable = () => {
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
-      <header className="mb-6">
-        <h1 className="text-3xl font-semibold mb-2">Manage Timetable</h1>
+      <header className="mb-2">
+        <h1 className="text-2xl font-semibold mb-2">Manage Timetable</h1>
       </header>
 
-      <section className="mb-6">
+      <section >
         {summary ? (
-          <div className="bg-primary text-white p-2 rounded-lg mb-6 shadow-sm">
+          <div className="bg-primary text-white p-2 rounded-lg mb-2 shadow-sm">
             <div className="flex flex-wrap">
               <div className="flex-1 min-w-[200px] p-2">
                 <strong>Department:</strong> {summary.dept_name}
@@ -134,12 +148,7 @@ const ManageTimetable = () => {
               <div className="flex-1 min-w-[100px] p-2">
                 <strong>Gap:</strong> {summary.gap} min
               </div>
-              <div className="flex-1 min-w-[170px] p-2">
-                <strong>Start Time:</strong> {summary.start_time}
-              </div>
-              <div className="flex-1 min-w-[170px] p-2">
-                <strong>End Time:</strong> {summary.end_time}
-              </div>
+             
             </div>
           </div>
         ) : (
@@ -172,25 +181,18 @@ const ManageTimetable = () => {
                           }
                         >
                           <option value="">Select Course</option>
-                          {timetable.map((course) => (
+                          {faculties.map((course) => (
                             <option key={course.cid} value={course.cid}>
                               {course.course_name}
                             </option>
                           ))}
                         </select>
-                        <select
-                          className="border rounded-md p-1"
-                          onChange={(e) =>
-                            handleSelectChange(day, slot, "faculty", e.target.value)
-                          }
-                        >
-                          <option value="">Select Faculty</option>
-                          {timetable.map((faculty) => (
-                            <option key={faculty.fid} value={faculty.fid}>
-                              {faculty.faculty_name}
-                            </option>
-                          ))}
-                        </select>
+                        
+                        {selectedDetails[`${day}-${slot}`]?.course && (
+                        <div className="border rounded-md p-1 bg-white">
+                        <strong>Faculty: </strong>{selectedDetails[`${day}-${slot}`]?.faculty || "No Faculty Assigned"}
+                        </div>
+                        )}
                         <select
                           className="border rounded-md p-1"
                           onChange={(e) =>

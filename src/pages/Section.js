@@ -15,6 +15,7 @@ const SectionManagement = () => {
 
     const [programs, setPrograms] = useState([]);
     const [years, setYears] = useState([]);
+    const [semesters, setSemesters] = useState([]);
 
     const [sectionfields, setSectionFields] = useState([]);
 
@@ -26,7 +27,7 @@ const SectionManagement = () => {
 
 
     const filteredData = sectionData.filter(item =>
-        ['name', 'pid', 'yid'].some(col => item[col]?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+        ['name', 'pid', 'yid', 'semid'].some(col => item[col]?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     // table end
@@ -63,6 +64,13 @@ const SectionManagement = () => {
                     toast.error(sectionfieldsResponse.message);
                 }
 
+                const semesterResponse = await fetchDataSection('semesterdata');
+                if (semesterResponse.success) {
+                    setSemesters(semesterResponse.data);
+                } else {
+                    toast.error(semesterResponse.message);
+                }
+
             } catch (error) {
                 console.error('Error fetching data:', error);
                 toast.error('Failed to fetch data. Please try again later.');
@@ -87,12 +95,17 @@ const SectionManagement = () => {
         if (!form.yid) {
             errors.yid = 'Year is required';
         }
+
+        if (!form.semid) {
+            errors.semid = 'Semester is required';
+        }
         
         const isDuplicate = sectionData.some(
         item =>
             item.name.toLowerCase() === form.name.toLowerCase() &&
             item.pid === form.pid &&
             item.yid === form.yid &&
+            item.semid === form.semid &&
             item.sid !== form.sid // Ensure we're not comparing the same item
     );
 
@@ -131,7 +144,7 @@ const SectionManagement = () => {
                 }
                 toast.success(response.message || 'Section saved successfully!');
                 setShowModal(false);
-                setForm({ sid: '', name: '', pid: '', yid: '' });
+                setForm({ sid: '', name: '', pid: '', yid: '',semid:'' });
             } else {
                 toast.error(response.message);
             }
@@ -145,14 +158,14 @@ const SectionManagement = () => {
     
 
     const handleAddNewSection = () => {
-        setForm({ sid: '', name: '', pid:'', yid:''});
+        setForm({ sid: '', name: '', pid:'', yid:'', semid:''});
         setIsEditing(false);
         setModalTitle('Add New Section'); 
         setShowModal(true);
     };
 
     const handleEdit = (item) => {
-        setForm({ sid: item.sid, name: item.name, pid:item.pid, yid:item.yid });
+        setForm({ sid: item.sid, name: item.name, pid:item.pid, yid:item.yid, semid:item.semid });
         setIsEditing(true);
         setModalTitle('Edit Section'); 
         setShowModal(true);
@@ -195,7 +208,7 @@ const SectionManagement = () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    const generateKey = (item, index) => `${['pid', 'name', 'alias', 'timeid'].map(col => item[col]).join('-')}-${index}`;
+    const generateKey = (item, index) => `${['pid', 'name', 'alias', 'timeid', 'semid'].map(col => item[col]).join('-')}-${index}`;
 
     const ActionButtons = ({ item }) => (
         <div className="flex space-x-2 justify-center">
@@ -225,6 +238,8 @@ const SectionManagement = () => {
         programName: programs.find((pro) => pro.pid === section.pid)?.name || 'Unknown Program',
 
         yearName: years.find((year) => year.yid === section.yid)?.name || 'Unknown Year',
+
+        semName: semesters.find((sem) => sem.semid === section.semid)?.name || 'Unknown Semester',
     }));
 
 
@@ -269,6 +284,7 @@ const SectionManagement = () => {
 
                                     <th className="p-4 text-left whitespace-nowrap">Program</th>
                                     <th className="p-4 text-left whitespace-nowrap">Year</th>
+                                    <th className="p-4 text-left whitespace-nowrap">Semester</th>
                                     <th className="p-4 text-left whitespace-nowrap">Section</th>
 
                                     <th className="p-4 text-left whitespace-nowrap">Action</th>
@@ -282,6 +298,7 @@ const SectionManagement = () => {
 
                                         <td className="p-4">{item.programName}</td> {/* Display Department Name */}
                                         <td className="p-4">{item.yearName}</td>
+                                        <td className="p-4">{item.semName}</td>
                                         <td className="p-4">{item.name}</td>
 
                                         <td className="p-4">
@@ -382,10 +399,30 @@ const SectionManagement = () => {
                             {formErrors.yid && <p className="text-error">{formErrors.yid}</p>}
                         </div>
 
+                        <div className="mb-4">
+                            <label className="label">
+                                <span className="label-text">Semester</span>
+                            </label>
+                            <select
+                                value={form.semid}
+                                onChange={(e) => setForm({ ...form, semid: e.target.value })}
+                                className={`input input-bordered w-full ${formErrors.semid ? 'input-error' : ''}`}
+                            >
+                                <option value="">Select Semester</option>
+                                {semesters.map((sems) => (
+                                    <option key={sems.semid} value={sems.semid}>
+                                        {sems.name}
+                                    </option>
+                                ))}
+                            </select>
+                            {formErrors.semid && <p className="text-error">{formErrors.semid}</p>}
+                        </div>
+                        
+
 
                         <div className="mb-4">
                             <label className="label">
-                                <span className="label-text">Section</span>
+                            <span className="label-text">Section</span>
                             </label>
                             <select
                                 value={form.name}
@@ -401,13 +438,15 @@ const SectionManagement = () => {
                             </select>
                             {formErrors.name && <p className="text-error">{formErrors.name}</p>}
                         </div>
+
+                    
                      
                       
                         
                         <div className="modal-action">
 
                             <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
-                                {isEditing ? 'Update Program' : 'Add Program'}
+                                {isEditing ? 'Update Section' : 'Add Section'}
                             </button>
                             <button className="btn btn-secondary" onClick={handleClose}>Cancel</button>
                         </div>

@@ -21,6 +21,7 @@ const CourseAllotmentManagement = () => {
     yid: "",
     sid: "",
     fid: "",
+    semid: "",
   });
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -34,7 +35,8 @@ const CourseAllotmentManagement = () => {
   const [sections, setSections] = useState([]);
   const [faculties, setFaculties] = useState([]);
 
-  const [sectionfields, setSectionFields] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+  
 
   // table start
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,6 +83,13 @@ const CourseAllotmentManagement = () => {
           toast.error(sectionResponse.message);
         }
 
+        const semesterResponse = await fetchDataSection('semesterdata');
+        if (semesterResponse.success) {
+        setSemesters(semesterResponse.data);
+        } else {
+        toast.error(semesterResponse.message);
+        }
+
         const facultyResponse = await fetchDataSection("faculty");
         if (facultyResponse.success) {
           setFaculties(facultyResponse.data);
@@ -95,12 +104,7 @@ const CourseAllotmentManagement = () => {
           toast.error(courseResponse.message);
         }
 
-        // const sectionfieldsResponse = await fetchDataSection("sectionfields");
-        // if (sectionfieldsResponse.success) {
-        //   setSectionFields(sectionfieldsResponse.data);
-        // } else {
-        //   toast.error(sectionfieldsResponse.message);
-        // }
+    
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to fetch data. Please try again later.");
@@ -134,12 +138,17 @@ const CourseAllotmentManagement = () => {
       errors.fid = "Faculty is required";
     }
 
+    if (!form.semid) {
+      errors.semid = "Semester is required";
+    }
+
     const isDuplicate = courseDataAllotment.some(
       (item) =>
         item.pid === form.pid &&
         item.fid === form.fid &&
         item.yid === form.yid &&
         item.sid === form.sid &&
+        item.semid === form.semid &&
         item.cid !== form.cid // Ensure we're not comparing the same item
     );
 
@@ -185,7 +194,7 @@ const CourseAllotmentManagement = () => {
           response.message || "course allotment saved successfully!"
         );
         setShowModal(false);
-        setForm({ caid: "", cid: "", pid: "", yid: "", sid: "", fid: "" });
+        setForm({ caid: "", cid: "", pid: "", yid: "", sid: "", fid: "" , semid: "" });
       } else {
         toast.error(response.message);
       }
@@ -198,9 +207,9 @@ const CourseAllotmentManagement = () => {
   };
 
   const handleAddNewCourseAllotment = () => {
-    setForm({ caid: "", cid: "", pid: "", yid: "", sid: "", fid: "" });
+    setForm({ caid: "", cid: "", pid: "", yid: "", sid: "", fid: "", semid: "" });
     setIsEditing(false);
-    setModalTitle("Add New Allotment");
+    setModalTitle("Add New Course Allotmen");
     setShowModal(true);
   };
 
@@ -212,6 +221,7 @@ const CourseAllotmentManagement = () => {
       yid: item.yid,
       caid: item.caid,
       fid: item.fid,
+      semid: item.semid,
     });
     setIsEditing(true);
     setModalTitle("Edit Allotment");
@@ -254,7 +264,7 @@ const CourseAllotmentManagement = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const generateKey = (item, index) =>
-    `${["caid", "cid", "alias", "yid", "sid", "fid"]
+    `${["caid", "cid", "alias", "yid", "sid", "fid","semid"]
       .map((col) => item[col])
       .join("-")}-${index}`;
 
@@ -299,6 +309,10 @@ const CourseAllotmentManagement = () => {
     courseName:
       courses.find((course) => course.cid === courseallotmentval.cid)?.name ||
       "Unknown course",
+
+    semName: semesters.find((sem) => sem.semid === courseallotmentval.semid)?.name ||
+     'Unknown Semester',
+
   }));
 
   return (
@@ -348,6 +362,7 @@ const CourseAllotmentManagement = () => {
                   </th>
                   <th className="p-4 text-left whitespace-nowrap">Year</th>
                   <th className="p-4 text-left whitespace-nowrap">Section</th>
+                  <th className="p-4 text-left whitespace-nowrap">Semester</th>
                   <th className="p-4 text-left whitespace-nowrap">Course</th>
                   <th className="p-4 text-left whitespace-nowrap">Faculty</th>
 
@@ -365,6 +380,7 @@ const CourseAllotmentManagement = () => {
                       <td className="p-4">{indexOfFirstItem + index + 1}</td>
                       <td className="p-4">{item.programName}</td>{" "}
                       <td className="p-4">{item.yearName}</td>
+                      <td className="p-4">{item.semName}</td>
                       <td className="p-4">{item.sectionName}</td>
                       <td className="p-4">{item.courseName}</td>
                       <td className="p-4">{item.facultyName}</td>
@@ -446,7 +462,7 @@ const CourseAllotmentManagement = () => {
               </select>
               {formErrors.pid && <p className="text-error">{formErrors.pid}</p>}
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-3 gap-4 mb-4">
               <div>
                 <label className="label">
                   <span className="label-text">Year</span>
@@ -492,6 +508,30 @@ const CourseAllotmentManagement = () => {
                   <p className="text-error">{formErrors.sid}</p>
                 )}
               </div>
+
+              <div>
+                <label className="label">
+                  <span className="label-text">Semester</span>
+                </label>
+                <select
+                  value={form.semid}
+                  onChange={(e) => setForm({ ...form, semid: e.target.value })}
+                  className={`input input-bordered w-full ${
+                    formErrors.semid ? "input-error" : ""
+                  }`}
+                >
+                  <option value="">Select Section</option>
+                  {semesters.map((section) => (
+                    <option key={section.semid} value={section.semid}>
+                      {section.name}
+                    </option>
+                  ))}
+                </select>
+                {formErrors.semid && (
+                  <p className="text-error">{formErrors.semid}</p>
+                )}
+              </div>
+              
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -529,7 +569,7 @@ const CourseAllotmentManagement = () => {
                     formErrors.fid ? "input-error" : ""
                   }`}
                 >
-                  <option value="">Select Section</option>
+                  <option value="">Select Faculty</option>
                   {faculties.map((faculty) => (
                     <option key={faculty.fid} value={faculty.fid}>
                       {faculty.name}

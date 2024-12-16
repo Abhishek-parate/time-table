@@ -14,6 +14,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     { name: 'Manage Department', path: '/dept', icon: <FaBuilding /> }, // Changed to FaBuilding
     { name: 'Manage Program', path: '/program', icon: <FaBriefcase /> }, // Changed to FaBriefcase
     { name: 'Manage Academic Year', path: '/year', icon: <FaBuilding /> }, // Changed to FaBuilding
+    { name: 'Manage Semester', path: '/semester', icon: <FaThList /> }, // Changed to FaThList
     { name: 'Manage Section', path: '/section', icon: <FaThList /> }, // Changed to FaThList
     { name: 'Manage Course', path: '/course', icon: <FaBookOpen /> }, // Changed to FaBookOpen
     { name: 'Manage Faculty', path: '/faculty', icon: <FaUserTie /> }, // Changed to FaUserTie

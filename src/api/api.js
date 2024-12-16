@@ -72,6 +72,24 @@ export const deleteDataTime = async (endpoint, timeid) => {
     }
 };
 
+
+export const fetchelectivedata= async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
 export const fetchCourseCategory= async (endpoint) => {
     try {
         const response = await axios.get(`${API_URL}${endpoint}`);
@@ -666,7 +684,15 @@ export const fetchFloors = async (endpoint) => {
 };
 
 
-
+export const fetchDatacourseandfaculty = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching data from ${endpoint}:`, error);
+        throw new Error('Failed to fetch data.');
+    }
+};
 
 
 
@@ -758,8 +784,6 @@ export const deleteDataAllotment = async (endpoint, aid) => {
 };
 
 
-
-
 export const fetchDataYear = async (endpoint) => {
     try {
         const response = await axios.get(`${API_URL}${endpoint}`);
@@ -816,6 +840,78 @@ export const deleteDataYear = async (endpoint, yid) => {
     try {
         const response = await axios.delete(`${API_URL}${endpoint}`, {
             data: { yid },  
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error deleting data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+
+export const fetchDataSemester = async (endpoint) => {
+    try {
+        const response = await axios.get(`${API_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error fetching data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error; 
+    }
+};
+
+export const createDataSemester = async (endpoint, data) => {
+    try {
+        const response = await axios.post(`${API_URL}${endpoint}`, data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error creating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+export const updateDataSemester = async (endpoint, semid, data) => {
+    try {
+        const response = await axios.put(`${API_URL}${endpoint}`, data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error updating data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+            alert(`Error: ${error.message}`);
+        }
+        throw error;
+    }
+};
+
+
+export const deleteDataSemester = async (endpoint, semid) => {
+    try {
+        const response = await axios.delete(`${API_URL}${endpoint}`, {
+            data: { semid },  
         });
         return response.data;
     } catch (error) {
