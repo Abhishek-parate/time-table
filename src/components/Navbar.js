@@ -1,26 +1,75 @@
-import React, { useState } from 'react';
-import { FaUserCircle, FaBell, FaBars, FaExpand, FaCompress } from 'react-icons/fa';
-import logo from '../images/logo.webp'; // Make sure the path is correct
+import {
+  FaUserCircle,
+  FaBell,
+  FaBars,
+  FaExpand,
+  FaCompress,
+} from "react-icons/fa";
+import logo from "../images/logo.webp"; // Make sure the path is correct
+import React, { useEffect, useState } from "react";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 
 const Navbar = ({ toggleSidebar }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [redirectToHome, setRedirectToHome] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Retrieve user data from sessionStorage
+    const storedUserData = sessionStorage.getItem("user");
+
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData);
+      setName(userData.name);
+      setRole(userData.role);
+
+      // Check if the role is not admin or emp and set redirectToHome to true
+      if (userData.role !== "admin" && userData.role !== "emp") {
+        setRedirectToHome(true);
+      }
+    } else {
+      // If no user data found, set redirectToHome to true
+      setRedirectToHome(true);
+    }
+  }, []);
+
+  // Redirect user after login
+  if (redirectToHome) {
+    return <Navigate to="/login" />;
+  }
+
+  if (redirectToHome) {
+    return <Navigate to="/login" />;
+  }
+
+  const handleLogout = () => {
+    // Clear all session storage
+    sessionStorage.clear();
+    // Redirect to home page
+    navigate("/login");
+  };
 
   // Fullscreen toggle function
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       // Enter fullscreen
       document.documentElement.requestFullscreen().catch((err) => {
-        console.error(`Error attempting to enable fullscreen mode: ${err.message}`);
+        console.error(
+          `Error attempting to enable fullscreen mode: ${err.message}`
+        );
       });
     } else {
       // Exit fullscreen
       document.exitFullscreen().catch((err) => {
-        console.error(`Error attempting to exit fullscreen mode: ${err.message}`);
+        console.error(
+          `Error attempting to exit fullscreen mode: ${err.message}`
+        );
       });
     }
   };
-  
 
   return (
     <div className="navbar bg-primary text-white lg:bg-white lg:text-black shadow-lg p-4 flex justify-between items-center">
@@ -58,7 +107,10 @@ const Navbar = ({ toggleSidebar }) => {
         </button>
 
         <p className="hidden sm:block px-4 py-2 hover:bg-gray-100 cursor-pointer text-white lg:text-black">
-          Logged in as <span className="font-semibold">Abhishek</span>
+          Logged in as <span className="font-semibold">{name}</span>
+        </p>
+        <p className="hidden sm:block px-4 py-2 hover:bg-gray-100 cursor-pointer text-white lg:text-black">
+          Role <span className="font-semibold">{role}</span>
         </p>
 
         {/* Notification Icon */}
@@ -83,12 +135,15 @@ const Navbar = ({ toggleSidebar }) => {
               <ul className="py-1">
                 <hr className="my-1" />
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-black">
-                  Change Password
+                  <Link to={"/change-password"}>Change Password</Link>
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-black">
                   Settings
                 </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500">
+                <li
+                  onClick={handleLogout}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500"
+                >
                   Logout
                 </li>
               </ul>

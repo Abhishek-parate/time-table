@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo} from "react";
 import { toast } from "react-hot-toast";
 import {
   fetchDataSemester,
@@ -6,11 +6,9 @@ import {
   updateDataSemester,
   deleteDataSemester,
   fetchDataYear,
-  fetchDataPrograms,
   fetchDataProgram,
 } from "../api/api";
 import FormModal from "../components/FormModal";
-import Table from "../components/Table";
 
 const SemesterManagement = () => {
   const [semesterData, setSemesterData] = useState([]);
@@ -24,9 +22,7 @@ const SemesterManagement = () => {
   const [programs, setPrograms] = useState([]);
   const [years, setYears] = useState([]);
 
-  const [selectedProgram, setSelectedProgram] = useState(''); // Added state for selected program
-  const [filteredYears, setFilteredYears] = useState([]);
-
+ 
   // Table handling
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,18 +68,7 @@ const SemesterManagement = () => {
     fetchSemesterData();
   }, []);
 
-
-  useEffect(() => {
-    if (selectedProgram && years.length > 0) {
-      const filtered = years.filter((year) => year.pid === selectedProgram);
-      setFilteredYears(filtered);
-    } else {
-      setFilteredYears([]);
-    }
-  }, [selectedProgram, years]); // This hook is triggered whenever selectedProgram or years changes
-  
-
-
+ 
   const validateForm = () => {
     const errors = {};
     if (!form.name) errors.name = "Name is required";
@@ -106,16 +91,14 @@ const SemesterManagement = () => {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
     setFormErrors({});
     setLoading(true);
-    
 
     const errors = validateForm();
 
     console.log(errors);
-    
+
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       setLoading(false);
@@ -192,19 +175,7 @@ const SemesterManagement = () => {
     setFormErrors({});
   }, []);
 
-
-  useEffect(() => {
-    if (selectedProgram && years.length > 0) {
-      const filtered = years.filter((year) => year.pid === selectedProgram);
-      setFilteredYears(filtered);
-    } else {
-      setFilteredYears([]);
-    }
-  }, [selectedProgram, years]);
-
-  
-  
-
+ 
   // Pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -244,6 +215,34 @@ const SemesterManagement = () => {
     yearName:
       years.find((year) => year.yid === semester.yid)?.name || "Unknown Year",
   }));
+
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: value,
+    });
+
+ if (name === "pid") {
+      setForm((prevForm) => ({
+        ...prevForm,
+        yid: "",
+       
+      }));
+    }
+  };
+
+    const filteredPrograms = useMemo(
+      () => programs.filter((program) => program.did === form.did),
+      [form.did, programs]
+    );
+  
+    const filteredYears = useMemo(
+      () => years.filter((year) => year.pid === form.pid),
+      [form.pid, years]
+    );
+  
 
   return (
     <div className="p-6 bg-card-bg rounded-lg shadow-md h-full">
@@ -362,71 +361,77 @@ const SemesterManagement = () => {
           formErrors={formErrors}
         >
           <div className="form-modal p-4">
-            <div className="mb-4">
-              <label className="label">
-                <span className="label-text">Program</span>
-              </label>
-              <select
-  value={form.pid}
-  onChange={(e) => {
-    const selected = e.target.value;
-    setSelectedProgram(selected); // Update the selected program
-    setForm({ ...form, pid: selected }); // Optionally update the form if needed
-  }}
-  className={`input input-bordered w-full ${formErrors.pid ? "input-error" : ""}`}
->
-  <option value="">Select Program</option>
-  {programs.map((pro) => (
-    <option key={pro.pid} value={pro.pid}>
-      {pro.name}
-    </option>
-  ))}
-</select>
-
-              {formErrors.pid && <p className="text-error">{formErrors.pid}</p>}
-            </div>
+       
 
             <div className="mb-4">
-              <label className="label">
-                <span className="label-text">Year</span>
-              </label>
-              <select
-                value={form.yid}
-                onChange={(e) => setForm({ ...form, yid: e.target.value })}
-                className={`input input-bordered w-full ${
-                  formErrors.yid ? "input-error" : ""
-                }`}
-              >
-            <option value="">Select Year</option>
-{filteredYears.length > 0 ? (
-  filteredYears.map((year) => (
-    <option key={year.yid} value={year.yid}>
-      {year.name}
-    </option>
-  ))
-) : (
-  <option value="" disabled>No Year Available</option>
-)}
-              </select>
-              {formErrors.yid && <p className="text-error">{formErrors.yid}</p>}
-            </div>
+                <label className="label">
+                  <span className="label-text">Program</span>
+                </label>
+                <select
+                  id="pid"
+                  name="pid"
+                  value={form.pid}
+                  onChange={handleInputChange}
+                  className="input input-bordered w-full s"
+                >
+                  <option value="">Select Program</option>
+                  {filteredPrograms.map((program) => (
+                    <option key={program.pid} value={program.pid}>
+                      {program.name}
+                    </option>
+                  ))}
+                </select>
+                {formErrors.pid && (
+                  <span className="error">{formErrors.pid}</span>
+                )}
+              </div>
 
-
+        
 
             
             <div className="mb-4">
-                            <label className="label">
-                                <span className="label-text">Semester</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                placeholder="Semester"
-                                className={`input input-bordered w-full ${formErrors.name ? 'input-error' : ''}`}
-                            />
-                            {formErrors.name && <p className="text-error">{formErrors.name}</p>}
-                        </div>
+                <label className="label">
+                  <span className="label-text">Year</span>
+                </label>
+                <select
+                  id="yid"
+                  name="yid"
+                  value={form.yid}
+                  onChange={handleInputChange}
+                  className="input input-bordered w-full"
+                  disabled={!form.pid} // Disable if no program is selected
+                >
+                  <option value="">Select Year</option>
+                  {filteredYears.map((year) => (
+                    <option key={year.yid} value={year.yid}>
+                      {year.name}
+                    </option>
+                  ))}
+                </select>
+                {formErrors.yid && (
+                  <span className="error">{formErrors.yid}</span>
+                )}
+              </div>
+
+            <div className="mb-4">
+              <label className="label">
+                <span className="label-text">Semester</span>
+              </label>
+              <input
+                type="number"
+                max={8}
+                min={1}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="Semester"
+                className={`input input-bordered w-full ${
+                  formErrors.name ? "input-error" : ""
+                }`}
+              />
+              {formErrors.name && (
+                <p className="text-error">{formErrors.name}</p>
+              )}
+            </div>
             <div className="modal-action">
               <button
                 className="btn btn-primary"

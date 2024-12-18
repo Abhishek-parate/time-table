@@ -131,7 +131,7 @@ const ManageTimetable = () => {
 
       <section >
         {summary ? (
-          <div className="bg-primary text-white p-2 rounded-lg mb-2 shadow-sm">
+          <div className="bg-primary text-sm text-white p-2 rounded-lg mb-2 shadow-sm">
             <div className="flex flex-wrap">
               <div className="flex-1 min-w-[200px] p-2">
                 <strong>Department:</strong> {summary.dept_name}

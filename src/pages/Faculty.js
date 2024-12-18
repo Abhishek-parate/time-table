@@ -347,7 +347,7 @@ const FacultyManagement = () => {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Name"
+                placeholder="Faculty Name"
                 className={`input input-bordered w-full ${
                   formErrors.name ? "input-error" : ""
                 }`}
@@ -401,6 +401,8 @@ const FacultyManagement = () => {
               </label>
               <input
                 type="number"
+                max={20}
+                min={1}
                 value={form.max_allowed_lecture}
                 onChange={(e) => {
                   const value = e.target.value;

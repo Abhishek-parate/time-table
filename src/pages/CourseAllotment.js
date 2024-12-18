@@ -209,7 +209,7 @@ const CourseAllotmentManagement = () => {
   const handleAddNewCourseAllotment = () => {
     setForm({ caid: "", cid: "", pid: "", yid: "", sid: "", fid: "", semid: "" });
     setIsEditing(false);
-    setModalTitle("Add New Course Allotmen");
+    setModalTitle("Add New Course Allotment");
     setShowModal(true);
   };
 
@@ -520,7 +520,7 @@ const CourseAllotmentManagement = () => {
                     formErrors.semid ? "input-error" : ""
                   }`}
                 >
-                  <option value="">Select Section</option>
+                  <option value="">Select Semester</option>
                   {semesters.map((section) => (
                     <option key={section.semid} value={section.semid}>
                       {section.name}

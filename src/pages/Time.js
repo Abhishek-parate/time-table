@@ -318,7 +318,7 @@ const Time = () => {
                     <div className="form-modal p-4">
                         <div className="mb-4">
                             <label className="label">
-                                <span className="label-text">Name</span>
+                                <span className="label-text">Shift Name</span>
                             </label>
                             <input
                                 type="text"

@@ -35,13 +35,13 @@ const TimetableManagement = () => {
   const [formErrors, setFormErrors] = useState({});
 
   const [programs, setPrograms] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [semesters, setSemesters] = useState([]);
   const [years, setYears] = useState([]);
   const [sections, setSections] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [gaps, setGaps] = useState([]);
   const navigate = useNavigate();
-  const [semesters, setSemesters] = useState([]);
+
 
   // table start
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,6 +88,12 @@ const TimetableManagement = () => {
         } else {
           toast.error(yearResponse.message);
         }
+        const semesterResponse = await fetchDataSection("semesterdata");
+        if (semesterResponse.success) {
+          setSemesters(semesterResponse.data);
+        } else {
+          toast.error(semesterResponse.message);
+        }
 
         const sectionResponse = await fetchDataSection("section");
         if (sectionResponse.success) {
@@ -103,12 +109,7 @@ const TimetableManagement = () => {
           toast.error(gapsResponse.message);
         }
 
-        const semesterResponse = await fetchDataSection("semesterdata");
-        if (semesterResponse.success) {
-          setSemesters(semesterResponse.data);
-        } else {
-          toast.error(semesterResponse.message);
-        }
+
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to fetch data. Please try again later.");
@@ -248,16 +249,17 @@ const TimetableManagement = () => {
     setShowModal(true);
   };
 
-  const handleViewClick = async (tid) => {
+  const handleViewClick=async(tid)=>{
     setLoading(true);
     try {
-      navigate(`/manage-timetable/${tid}`);
-    } catch (error) {
-      console.error("Error open timetable:", error);
-      toast.error("Failed to open timetable. Please try again.");
-    }
-    setLoading(false);
-  };
+        navigate(`/manage-timetable/${tid}`);
+      } catch (error) {
+        console.error("Error open timetable:", error);
+        toast.error("Failed to open timetable. Please try again.");
+      }
+      setLoading(false);
+    };
+  
 
   const handleDelete = async (tid) => {
     setLoading(true);
@@ -301,6 +303,7 @@ const TimetableManagement = () => {
     <div className="flex space-x-2 justify-center">
       <button
         onClick={() => handleViewClick(item.tid)}
+        
         className="btn btn-primary text-white btn-sm"
         aria-label="Delete"
       >
@@ -356,23 +359,15 @@ const TimetableManagement = () => {
         ...prevForm,
         pid: "",
         yid: "",
-        semid: "",
         sid: "",
       }));
     } else if (name === "pid") {
       setForm((prevForm) => ({
         ...prevForm,
         yid: "",
-        semid: "",
         sid: "",
       }));
     } else if (name === "yid") {
-      setForm((prevForm) => ({
-        ...prevForm,
-        semid: "",
-        sid: "",
-      }));
-    } else if (name === "semid") {
       setForm((prevForm) => ({
         ...prevForm,
         sid: "",
@@ -390,14 +385,9 @@ const TimetableManagement = () => {
     [form.pid, years]
   );
 
-  const filteredSemester = useMemo(
-    () => semesters.filter((sem) => sem.yid === form.yid),
-    [form.yid, semesters]
-  );
-
   const filteredSections = useMemo(
-    () => sections.filter((section) => section.semid === form.semid),
-    [form.semid, sections]
+    () => sections.filter((section) => section.yid === form.yid),
+    [form.yid, sections]
   );
 
   return (
@@ -448,15 +438,11 @@ const TimetableManagement = () => {
                   <th className="p-4 text-left whitespace-nowrap">Program</th>
                   <th className="p-4 text-left whitespace-nowrap">Year</th>
                   <th className="p-4 text-left whitespace-nowrap">Section</th>
-                  <th className="p-4 text-left whitespace-nowrap">
-                    Duration of Lecture
-                  </th>
+                  <th className="p-4 text-left whitespace-nowrap">Duration of Lecture</th>
                   <th className="p-4 text-left whitespace-nowrap">
                     Start Lecture Time
                   </th>
-                  <th className="p-4 text-left whitespace-nowrap">
-                    End Lecture Time
-                  </th>
+                  <th className="p-4 text-left whitespace-nowrap">End Lecture Time</th>
 
                   <th className="p-4 text-left whitespace-nowrap">Action</th>
                 </tr>
@@ -536,15 +522,8 @@ const TimetableManagement = () => {
           formErrors={formErrors}
         >
           <div className="form-modal p-4">
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-              
-
-              <label className="label">
-                  <span className="label-text">Department</span>
-                </label>
-
+            <div className="mb-4">
+              <label htmlFor="did">Department</label>
               <select
                 id="did"
                 name="did"
@@ -563,91 +542,51 @@ const TimetableManagement = () => {
                 <span className="error">{formErrors.did}</span>
               )}
             </div>
-
-            
-            <div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
                 <label className="label">
                   <span className="label-text">Program</span>
                 </label>
                 <select
-                  id="pid"
-                  name="pid"
-                  value={form.pid}
-                  onChange={handleInputChange}
-                  className="input input-bordered w-full s"
-                  disabled={!form.did} // Disable if no department is selected
-                >
-                  <option value="">Select Program</option>
-                  {filteredPrograms.map((program) => (
-                    <option key={program.pid} value={program.pid}>
-                      {program.name}
-                    </option>
-                  ))}
-                </select>
-                {formErrors.pid && (
-                  <span className="error">{formErrors.pid}</span>
-                )}
+      id="pid"
+      name="pid"
+      value={form.pid}
+      onChange={handleInputChange}
+      className="input input-bordered w-full s"
+      disabled={!form.did} // Disable if no department is selected
+    >
+      <option value="">Select Program</option>
+      {filteredPrograms.map((program) => (
+        <option key={program.pid} value={program.pid}>
+          {program.name}
+        </option>
+      ))}
+    </select>
+    {formErrors.pid && <span className="error">{formErrors.pid}</span>}
               </div>
-          </div>
-         
-
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-
-
 
               <div>
                 <label className="label">
                   <span className="label-text">Year</span>
                 </label>
                 <select
-                  id="yid"
-                  name="yid"
-                  value={form.yid}
-                  onChange={handleInputChange}
-                  className="input input-bordered w-full"
-                  disabled={!form.pid} // Disable if no program is selected
-                >
-                  <option value="">Select Year</option>
-                  {filteredYears.map((year) => (
-                    <option key={year.yid} value={year.yid}>
-                      {year.name}
-                    </option>
-                  ))}
-                </select>
-                {formErrors.yid && (
-                  <span className="error">{formErrors.yid}</span>
-                )}
+      id="yid"
+      name="yid"
+      value={form.yid}
+      onChange={handleInputChange}
+      className="input input-bordered w-full"
+      disabled={!form.pid} // Disable if no program is selected
+    >
+      <option value="">Select Year</option>
+      {filteredYears.map((year) => (
+        <option key={year.yid} value={year.yid}>
+          {year.name}
+        </option>
+      ))}
+    </select>
+    {formErrors.yid && <span className="error">{formErrors.yid}</span>}
               </div>
-
-
-              
-              <div>
-                <label className="label">
-                  <span className="label-text">Semester</span>
-                </label>
-                <select
-                  id="semid"
-                  name="semid"
-                  value={form.semid}
-                  onChange={handleInputChange}
-                  className="input input-bordered w-full"
-                  disabled={!form.yid} // Disable if no program is selected
-                >
-                  <option value="">Select Semester</option>
-                  {filteredSemester.map((sem) => (
-                    <option key={sem.semid} value={sem.semid}>
-                      {sem.name}
-                    </option>
-                  ))}
-                </select>
-                {formErrors.semid && (
-                  <span className="error">{formErrors.semid}</span>
-                )}
-              </div>
-            
             </div>
-
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
@@ -655,23 +594,21 @@ const TimetableManagement = () => {
                   <span className="label-text">Section</span>
                 </label>
                 <select
-                  id="sid"
-                  name="sid"
-                  value={form.sid}
-                  onChange={handleInputChange}
-                  className="input input-bordered w-full "
-                  disabled={!form.semid} // Disable if no year is selected
-                >
-                  <option value="">Select Section</option>
-                  {filteredSections.map((section) => (
-                    <option key={section.sid} value={section.sid}>
-                      {section.name}
-                    </option>
-                  ))}
-                </select>
-                {formErrors.sid && (
-                  <span className="error">{formErrors.sid}</span>
-                )}
+      id="sid"
+      name="sid"
+      value={form.sid}
+      onChange={handleInputChange}
+      className="input input-bordered w-full "
+      disabled={!form.yid} // Disable if no year is selected
+    >
+      <option value="">Select Section</option>
+      {filteredSections.map((section) => (
+        <option key={section.sid} value={section.sid}>
+          {section.name}
+        </option>
+      ))}
+    </select>
+    {formErrors.sid && <span className="error">{formErrors.sid}</span>}
               </div>
               <div>
                 <label className="label">

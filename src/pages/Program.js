@@ -332,42 +332,16 @@ const ProgramManagement = () => {
                     formErrors={formErrors}
                 >
                     <div className="form-modal p-4">
-                        <div className="mb-4">
+                    <div className="mb-4">
                             <label className="label">
-                                <span className="label-text">Name</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                placeholder="Name"
-                                className={`input input-bordered w-full ${formErrors.name ? 'input-error' : ''}`}
-                            />
-                            {formErrors.name && <p className="text-error">{formErrors.name}</p>}
-                        </div>
-                        <div className="mb-4">
-                            <label className="label">
-                                <span className="label-text">Alias</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={form.alias}
-                                onChange={(e) => setForm({ ...form, alias: e.target.value })}
-                                placeholder="Alias"
-                                className={`input input-bordered w-full ${formErrors.alias ? 'input-error' : ''}`}
-                            />
-                            {formErrors.alias && <p className="text-error">{formErrors.alias}</p>}
-                        </div>
-                        <div className="mb-4">
-                            <label className="label">
-                                <span className="label-text">Program</span>
+                                <span className="label-text">Department</span>
                             </label>
                             <select
                                 value={form.did}
                                 onChange={(e) => setForm({ ...form, did: e.target.value })}
                                 className={`input input-bordered w-full ${formErrors.did ? 'input-error' : ''}`}
                             >
-                                <option value="">Select Program</option>
+                                <option value="">Select Department</option>
                                 {departments.map((dept) => (
                                     <option key={dept.did} value={dept.did}>
                                         {dept.name}
@@ -376,6 +350,33 @@ const ProgramManagement = () => {
                             </select>
                             {formErrors.did && <p className="text-error">{formErrors.did}</p>}
                         </div>
+                        <div className="mb-4">
+                            <label className="label">
+                                <span className="label-text">Program Name</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={form.name}
+                                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                placeholder="Program Name"
+                                className={`input input-bordered w-full ${formErrors.name ? 'input-error' : ''}`}
+                            />
+                            {formErrors.name && <p className="text-error">{formErrors.name}</p>}
+                        </div>
+                        <div className="mb-4">
+                            <label className="label">
+                                <span className="label-text">Short Name</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={form.alias}
+                                onChange={(e) => setForm({ ...form, alias: e.target.value })}
+                                placeholder="Short Name"
+                                className={`input input-bordered w-full ${formErrors.alias ? 'input-error' : ''}`}
+                            />
+                            {formErrors.alias && <p className="text-error">{formErrors.alias}</p>}
+                        </div>
+                      
                         <div className="modal-action">
 
                             <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>

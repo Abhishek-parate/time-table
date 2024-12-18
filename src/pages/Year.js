@@ -307,21 +307,8 @@ const YearManagement = () => {
                     formErrors={formErrors}
                 >
                     <div className="form-modal p-4">
-                        <div className="mb-4">
-                            <label className="label">
-                                <span className="label-text">Name</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                placeholder="Name"
-                                className={`input input-bordered w-full ${formErrors.name ? 'input-error' : ''}`}
-                            />
-                            {formErrors.name && <p className="text-error">{formErrors.name}</p>}
-                        </div>
-                       
-                        <div className="mb-4">
+                    
+                    <div className="mb-4">
                             <label className="label">
                                 <span className="label-text">Program</span>
                             </label>
@@ -339,6 +326,22 @@ const YearManagement = () => {
                             </select>
                             {formErrors.pid && <p className="text-error">{formErrors.pid}</p>}
                         </div>
+                        <div className="mb-4">
+                            <label className="label">
+                                <span className="label-text">Academic Year</span>
+                            </label>
+                            <input
+                                type="number"
+                                max={6}
+                                min={1}
+                                value={form.name}
+                                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                placeholder="Academic Year"
+                                className={`input input-bordered w-full ${formErrors.name ? 'input-error' : ''}`}
+                            />
+                            {formErrors.name && <p className="text-error">{formErrors.name}</p>}
+                        </div>
+                       
                         <div className="modal-action">
 
                             <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>

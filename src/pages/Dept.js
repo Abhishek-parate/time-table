@@ -338,45 +338,14 @@ const TimeManagement = () => {
                     <div className="form-modal p-4">
                         <div className="mb-4">
                             <label className="label">
-                                <span className="label-text">Name</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={form.name || ''}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                className="input input-bordered w-full"
-                                placeholder="Name"
-                            />
-                            {formErrors.name && <p className="text-error">{formErrors.name}</p>}
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="label">
-                                <span className="label-text"> Alias</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={form.alias || ''}
-                                onChange={(e) => setForm({ ...form, alias: e.target.value })}
-                                className="input input-bordered w-full"
-                                placeholder="Alias"
-                            />
-                            {formErrors.alias && <p className="text-error">{formErrors.alias}</p>}
-                        </div>
-
-
-
-
-                        <div className="mb-4">
-                            <label className="label">
-                                <span className="label-text">Time</span>
+                                <span className="label-text">Shift</span>
                             </label>
                             <select
                                 value={form.timeid}
                                 onChange={(e) => setForm({ ...form, timeid: e.target.value })}
                                 className={`input input-bordered w-full ${formErrors.timeid ? 'input-error' : ''}`}
                             >
-                                <option value="">Select Time</option>
+                                <option value="">Select Shift</option>
                                 {timevalues.map((timevalue) => (
                                     <option key={timevalue.timeid} value={timevalue.timeid}>
                                         {timevalue.name}
@@ -385,6 +354,33 @@ const TimeManagement = () => {
                             </select>
                             {formErrors.timeid && <p className="text-error">{formErrors.timeid}</p>}
                         </div>
+                        <div className="mb-4">
+                            <label className="label">
+                                <span className="label-text">Department Name</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={form.name || ''}
+                                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                className="input input-bordered w-full"
+                                placeholder="Department Name"
+                            />
+                            {formErrors.name && <p className="text-error">{formErrors.name}</p>}
+                        </div>
+                        <div className="mb-4">
+                            <label className="label">
+                                <span className="label-text">Short Name</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={form.alias || ''}
+                                onChange={(e) => setForm({ ...form, alias: e.target.value })}
+                                className="input input-bordered w-full"
+                                placeholder="Short Name"
+                            />
+                            {formErrors.alias && <p className="text-error">{formErrors.alias}</p>}
+                        </div>
+
 
 
                         <div className="modal-action">

@@ -339,13 +339,13 @@ const ClassroomManagement = () => {
                     <div className="form-modal p-4">
                         <div className="mb-4">
                             <label className="label">
-                                <span className="label-text">Name</span>
+                                <span className="label-text">Classroom Name</span>
                             </label>
                             <input
                                 type="text"
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                placeholder="Name"
+                                placeholder="Classroom Name"
                                 className={`input input-bordered w-full ${formErrors.name ? 'input-error' : ''}`}
                             />
                             {formErrors.name && <p className="text-error">{formErrors.name}</p>}
@@ -360,7 +360,7 @@ const ClassroomManagement = () => {
                                 className={`input input-bordered w-full ${formErrors.type ? 'input-error' : ''}`}
                             >
                                 
-                                <option value="">Select Section</option>
+                                <option value="">Select Type</option>
 
 
                                 {roomstype.map((type) => (
@@ -383,7 +383,7 @@ const ClassroomManagement = () => {
                                 className={`input input-bordered w-full ${formErrors.floor ? 'input-error' : ''}`}
                             >
                                 
-                                <option value="">Select Section</option>
+                                <option value="">Select Floor</option>
 
 
                                 {floor.map((floor) => (
@@ -402,6 +402,8 @@ const ClassroomManagement = () => {
     </label>
     <input
         type="number"
+        max={250}
+        min={1}
         value={form.cap}
         onChange={(e) => {
             const value = e.target.value;

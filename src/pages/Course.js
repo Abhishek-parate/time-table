@@ -519,13 +519,14 @@ const CourseManagement = () => {
           <div className="form-modal p-4">
             <div className="mb-4">
               <label className="label">
-                <span className="label-text">Name</span>
+                <span className="label-text">Course Name</span>
               </label>
               <input
                 type="text"
+                maxLength={200}
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Name"
+                placeholder="Course Name"
                 className={`input input-bordered w-full ${
                   formErrors.name ? "input-error" : ""
                 }`}
@@ -538,13 +539,14 @@ const CourseManagement = () => {
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="label">
-                  <span className="label-text">Alias</span>
+                  <span className="label-text">Short Name</span>
                 </label>
                 <input
                   type="text"
+                  maxLength={15}
                   value={form.alias}
                   onChange={(e) => setForm({ ...form, alias: e.target.value })}
-                  placeholder="Alias"
+                  placeholder="Short Name"
                   className={`input input-bordered w-full ${
                     formErrors.alias ? "input-error" : ""
                   }`}
@@ -559,6 +561,7 @@ const CourseManagement = () => {
                 </label>
                 <input
                   type="text"
+                  maxLength={10}
                   value={form.course_code}
                   onChange={(e) =>
                     setForm({ ...form, course_code: e.target.value })
@@ -605,6 +608,8 @@ const CourseManagement = () => {
                 </label>
                 <input
                   type="number"
+                  max={10}
+                  min={1}
                   value={form.max_lecture}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -641,7 +646,7 @@ const CourseManagement = () => {
                     formErrors.duration ? "input-error" : ""
                   }`}
                 >
-                  <option value="">Select Section</option>
+                  <option value="">Select Duration</option>
 
                   {durations.map((duration) => (
                     <option key={duration.em} value={duration.em}>
@@ -664,7 +669,7 @@ const CourseManagement = () => {
                     formErrors.did ? "input-error" : ""
                   }`}
                 >
-                  <option value="">Select Section</option>
+                  <option value="">Select Department</option>
 
                   {departments.map((dept) => (
                     <option key={dept.did} value={dept.did}>
@@ -690,7 +695,7 @@ const CourseManagement = () => {
                     formErrors.pid ? "input-error" : ""
                   }`}
                 >
-                  <option value="">Select Section</option>
+                  <option value="">Select Program</option>
 
                   {programs.map((pro) => (
                     <option key={pro.pid} value={pro.pid}>
